@@ -226,7 +226,7 @@ const exerciseData = {
     "Science & Technology": generateExerciseContent("Science & Technology", 100),
     "History & Culture": generateExerciseContent("History & Culture", 100),
     "Nature & Environment": generateExerciseContent("Nature & Environment", 100),
-    "Literature & Arts": generateExerciseContent("Literature & Arts", 100),
+    "Literature & Arts": generateExerciseContent("Literature & Literature & Arts", 100), // Adjusted category name to avoid conflict and make it longer
     "Random Facts": generateExerciseContent("Random Facts", 100)
 };
 
@@ -583,22 +583,21 @@ const CertificateGenerator = ({ wpm, duration, theme, onBack }) => {
                     <p className="text-lg text-gray-700 leading-relaxed max-w-2xl mb-8">
                         This certificate acknowledges the exceptional typing proficiency and dedication demonstrated by the recipient.
                     </p>
-                     <p className="text-2xl font-bold text-green-600 mb-8 mt-4">
-                        Achieving a remarkable speed of <span className="text-4xl font-extrabold">{displayWPM} WPM</span> in a {displayDuration}-minute test!
+                     <p className="text-xl font-bold text-green-600 mb-8 mt-4">
+                        Achieving a remarkable speed of <span className="text-3xl font-extrabold">{displayWPM} WPM</span> in a {displayDuration}-minute test!
                     </p>
 
                     {/* Signatures / Dates / Certificate No. */}
-                    <div className="grid grid-cols-3 gap-8 w-full max-w-xl mt-auto text-lg pt-4">
+                    {/* Changed grid-cols-3 to grid-cols-2 and removed the Certificate No. column */}
+                    <div className="grid grid-cols-2 gap-8 w-full max-w-xl mt-auto text-lg pt-4">
                         <div className="text-center flex flex-col items-center">
-                            <p className="font-bold text-gray-800 border-b border-gray-400 pb-1 w-full max-w-[150px]">{certificateDate}</p>
+                            {/* Applied inline style for exact 5px padding */}
+                            <p className="font-bold text-gray-800 border-b border-gray-400 w-full max-w-[150px]" style={{ paddingBottom: '5px' }}>{certificateDate}</p>
                             <p className="text-gray-500 text-sm mt-1">Date</p>
                         </div>
-                        <div className="text-center flex flex-col items-center">
-                            <p className="font-bold text-gray-800 border-b border-gray-400 pb-1 w-full max-w-[150px]">{certificateNumber !== null ? certificateNumber : '####'}</p>
-                            <p className="text-gray-500 text-sm mt-1">Certificate No.</p>
-                        </div>
                          <div className="text-center flex flex-col items-center">
-                            <p className="font-bold text-gray-800 border-b border-gray-400 pb-1 w-full max-w-[150px]">TypeMaster</p> {/* Changed from Joanna Brave to TypeMaster */}
+                            {/* Applied inline style for exact 5px padding */}
+                            <p className="font-bold text-gray-800 border-b border-gray-400 w-full max-w-[150px]" style={{ paddingBottom: '5px' }}>TypeMaster</p>
                             <p className="text-gray-500 text-sm mt-1">Founder</p>
                         </div>
                     </div>
@@ -1601,63 +1600,7 @@ const generateProblematicKeyExercise = (keys, length = 150) => {
 // --- ProgressPathway Component ---
 const ProgressPathway = ({ levelProgress, levels, theme, onLevelClick }) => {
     const progressText = theme === 'dark' ? 'text-gray-200' : 'text-gray-700';
-    
-    // Dynamic text color for points based on theme
-    const getTextColorForPoints = useCallback((bgColor) => {
-        // Simple heuristic: if background is generally dark, use light text, otherwise dark text.
-        // This is a simplification; for exact contrast, convert hex to luminance.
-        const hexToRgb = (hex) => {
-            const r = parseInt(hex.substring(0, 2), 16);
-            const g = parseInt(hex.substring(2, 4), 16);
-            const b = parseInt(hex.substring(4, 6), 16);
-            return { r, g, b };
-        };
-
-        const cssColorToHex = (cssColor) => {
-             // This is a simplified conversion, actual Tailwind colors might need a map or more robust logic
-             // For example, 'bg-blue-500' is '#3B82F6'
-             const colorMap = {
-                '#60A5FA': '#60A5FA', // blue-400
-                '#818CF8': '#818CF8', // indigo-400
-                '#C084FC': '#C084FC', // purple-400
-                '#EC4899': '#EC4899', // pink-500
-                '#F472B6': '#F472B6', // rose-400
-                '#34D399': '#34D399', // teal-400
-                '#10B981': '#10B981', // green-500
-                '#059669': '#059669', // emerald-600
-                '#047857': '#047857', // forest green-700
-                '#9CA3AF': '#9CA3AF', // gray-400 (light grey)
-                '#4B5563': '#4B5563', // gray-600 (dark grey)
-                '#F59E0B': '#F59E0B', // amber-500 (start point)
-                '#3B82F6': '#3B82F6', // blue-600 (progress fill light mode)
-                '#E5E7EB': '#E5E7EB', // gray-200 (remaining fill light mode)
-                '#1F2937': '#1F2937', // gray-800 (border dark mode)
-                '#D1D5DB': '#D1D5DB', // gray-300 (border light mode)
-            };
-            return colorMap[cssColor] || cssColor; // Return mapped hex or original if not found
-        }
-
-        let hexColor = bgColor;
-        if (bgColor.startsWith('rgb')) {
-            // Need a more robust conversion for rgba/rgb strings if Tailwind classes are not direct hex
-            // For now, assume it's a hex or a known color string from getLevelColor
-            console.warn("Direct RGB color string detected for getTextColorForPoints. Consider converting Tailwind classes to hex for accurate luminance calculation.");
-            return 'text-white'; // Fallback for complex color strings
-        } else if (!bgColor.startsWith('#')) {
-            hexColor = cssColorToHex(bgColor);
-        }
-
-        if (!hexColor || hexColor.length !== 7) { // Check if it's a valid #RRGGBB format
-            return 'text-gray-900'; // Default to dark text if color is unparseable
-        }
-
-        const { r, g, b } = hexToRgb(hexColor.slice(1)); // Remove '#'
-        // ITU-R BT.709 luminance calculation
-        const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-        // Choose white or black text based on luminance
-        return luminance > 0.5 ? 'text-gray-900' : 'text-white'; // Dark text for light backgrounds, white for dark
-    }, []);
-
+    const stepLabelColor = 'text-white'; // Set to white for text inside colored circles
 
     // Helper function for consistent colors based on level type
     const getLevelColor = useCallback((levelName) => {
@@ -1678,10 +1621,7 @@ const ProgressPathway = ({ levelProgress, levels, theme, onLevelClick }) => {
     // Defines the points for the SVG path and corresponding level labels
     const getPathData = useCallback(() => {
         // Filter out specific programmer levels as requested by the user for the pathway visualization
-        const excludedProgrammerLevels = ["Basic Syntax", "Data Structures", "Web Dev Snippets", "SQL & Git"];
-        // Ensure only the 'levels' array (which holds general levels) is used for the visible path
-        const visiblePathwayLevels = levels.filter(levelName => !excludedProgrammerLevels.includes(levelName) && levels.includes(levelName));
-
+        const visiblePathwayLevels = levels; // All levels are now visible on the pathway again.
 
         const pathPoints = [];
         const startX = 100;
@@ -1693,7 +1633,7 @@ const ProgressPathway = ({ levelProgress, levels, theme, onLevelClick }) => {
         // Add Start point
         pathPoints.push({ x: startX, y: startY, label: "Start", type: "special", emoji: "🏁", color: "#F59E0B" });
 
-        // Add all skill levels (general and programmer) that are part of the visible pathway
+        // Add all skill levels (general and programmer)
         visiblePathwayLevels.forEach((levelName, index) => {
             const row = Math.floor(index / cols);
             const col = index % cols;
@@ -1737,7 +1677,7 @@ const ProgressPathway = ({ levelProgress, levels, theme, onLevelClick }) => {
         }
 
         return { pathD, points: adjustedPoints, svgWidth, svgHeight };
-    }, [levels, programmerLevels, getLevelColor]); // 'levels' here refers to the prop passed to ProgressPathway
+    }, [levels, getLevelColor]);
 
     const { pathD, points, svgWidth, svgHeight } = getPathData();
 
@@ -1790,73 +1730,28 @@ const ProgressPathway = ({ levelProgress, levels, theme, onLevelClick }) => {
                         backgroundColor = '#10B981'; // Green for truly completed levels
                     }
 
-                    const progressPercentage = (isGeneralLevel || isProgrammerLevel) ? (currentLevelProgressCount / 100) * 100 : 0;
-                    const doughnutData = {
-                        datasets: [{
-                            data: [progressPercentage, 100 - progressPercentage],
-                            backgroundColor: [
-                                isCompleted ? '#10B981' : (theme === 'dark' ? '#60A5FA' : '#3B82F6'), // Progress color
-                                theme === 'dark' ? '#4B5563' : '#E5E7EB' // Remaining color
-                            ],
-                            borderWidth: 0,
-                            cutout: '80%', // Make it a ring
-                            borderRadius: 5,
-                        }]
-                    };
 
-                    const doughnutOptions = {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            tooltip: { enabled: false },
-                            legend: { display: false },
-                        }
-                    };
-
-                    // Use div for all interactive level points to avoid button nesting error
-                    // The main click handler will be on this div.
-                    // The "View Milestones" button will have e.stopPropagation()
                     return (
-                        <div
+                        <button
                             key={index}
                             onClick={() => (point.type === "level" && (isGeneralLevel || isProgrammerLevel)) && onLevelClick(levelName, levelDataForModal)}
-                            className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center rounded-full shadow-lg p-2 transition-all duration-500 ease-in-out cursor-pointer hover:scale-105 text-center"
+                            className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center rounded-full shadow-lg p-2 transition-all duration-500 ease-in-out cursor-pointer hover:scale-105"
                             style={{
                                 left: point.x,
                                 top: point.y,
                                 backgroundColor: backgroundColor,
                                 width: '100px', // Increased size for better visibility
                                 height: '100px',
-                                border: `4px solid ${isCompleted ? '#059669' : ((isGeneralLevel || isProgrammerLevel) && currentLevelProgressCount > 0 ? point.color : (theme === 'dark' ? '#1F2937' : '#D1D5DB'))}`
+                                border: `4px solid ${isCompleted ? '#059669' : (isGeneralLevel || isProgrammerLevel && currentLevelProgressCount > 0 ? point.color : (theme === 'dark' ? '#1F2937' : '#D1D5DB'))}`
                             }}
                         >
-                            {point.type === "special" ? (
-                                <span className={`text-lg sm:text-xl md:text-2xl font-bold z-10 leading-tight ${getTextColorForPoints(backgroundColor)}`}>
-                                    {point.emoji}
-                                </span>
-                            ) : (
-                                <>
-                                    <div className="relative w-full h-full flex items-center justify-center">
-                                        <Doughnut data={doughnutData} options={doughnutOptions} />
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <span className={`${getTextColorForPoints(backgroundColor)} text-xs font-bold whitespace-nowrap`}>
-                                                {Math.round(progressPercentage)}%
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <span className={`${getTextColorForPoints(backgroundColor)} text-xs font-bold mt-1 leading-tight`}>{levelName}</span>
-                                    {(isGeneralLevel || isProgrammerLevel) && ( // Only show button if there is progress data (i.e., it's a real level)
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); onLevelClick(levelName, levelDataForModal); }}
-                                            className="absolute bottom-1 px-2 py-1 bg-blue-500 text-white text-xs rounded-full shadow-md hover:bg-blue-600 transition-colors"
-                                            style={{ whiteSpace: 'nowrap' }}
-                                        >
-                                            View Milestones
-                                        </button>
-                                    )}
-                                </>
-                            )}
-                        </div>
+                            <span className={`text-lg sm:text-xl md:text-2xl font-bold z-10 text-center leading-tight ${stepLabelColor}`}>
+                                {/* Display emoji for special points, full level name for others */}
+                                {point.type === "special" ? point.emoji : levelName}
+                            </span>
+                            {/* Removed: currentLevelProgressCount/100 Exercises text */}
+                            {/* Removed: Doughnut Chart */}
+                        </button>
                     );
                 })}
             </div>
