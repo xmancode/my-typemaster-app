@@ -1066,6 +1066,17 @@ const Sidebar = ({ navigateTo, currentPage, theme, toggleTheme, selectedCategory
                     </ul>
                 </nav>
             </div>
+            {/* Theme Toggle Button */}
+            <div className="mt-8">
+                <button
+                    onClick={toggleTheme}
+                    className={`block w-full text-center py-3 px-4 rounded-xl transition-colors duration-200
+                        ${theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-600 hover:bg-gray-700'}
+                        text-white font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-75`}
+                >
+                    {theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                </button>
+            </div>
             <div className="mt-8 text-sm text-gray-400 text-center">
                 <p>&copy; 2025 TypeMaster.</p>
             </div>
@@ -1613,7 +1624,7 @@ const ProgressPathway = ({ levelProgress, levels, theme, onLevelClick }) => {
             return generalColors[generalLevelsInOrder.indexOf(levelName)] || "#60A5FA";
         } else if (programmerLevelsInOrder.includes(levelName)) {
             const programmerColors = ["#34D399", "#10B981", "#059669", "#047857"]; // Teal, Green, Dark Green, Emerald
-            return programmerColors[programmerLevelsInOrder.indexOf(levelName)] || "#34D399";
+            return programmerColors[programmerLevels.indexOf(levelName)] || "#34D399";
         }
         return "#9CA3AF"; // Default grey
     }, []); // No dependencies as these arrays are static
